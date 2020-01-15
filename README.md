@@ -33,8 +33,8 @@ COUNTERPARTY_BANK = ''
 ## Run
 ```
 # hello obp
-python hello_obp.py
+python obp.py
 
 # hello payments
-python hello_payments.py
+python payments.py
 ```
