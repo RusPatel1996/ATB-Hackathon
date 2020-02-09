@@ -48,15 +48,39 @@ def getTransactionsWithinTimeFrame(transactions, startTimeFrame, endTimeFrame):
             startTimeFrame <= datetime.datetime.strptime(x['details']['posted'],  "%Y-%m-%dT%H:%M:%S%z") and
             endTimeFrame >= datetime.datetime.strptime(x['details']['posted'],  "%Y-%m-%dT%H:%M:%S%z"), transactions))
 
-def payWithinTimeFrame(transactions, startTimeFrame, endTimeFrame):
-    # Look for recurring amounts, not all deposits made. <-- Going to take all deposits
+def getDepositsWithinTimeFrame(transactions, startTimeFrame, endTimeFrame):
     transactions = getTransactionsWithinTimeFrame(transactions, startTimeFrame, endTimeFrame)
-    totalPay = 0
+    totalDeposits = 0
     for transaction in transactions:
         transactionValue = float(transaction['details']['value']['amount'])
         if  transactionValue > 0:
-            totalPay += transactionValue
-    return totalPay
+            totalDeposits += transactionValue
+    return totalDeposits
+
+def getWithdrawlsWithinTimeFrame(transactions, startTimeFrame, endTimeFrame):
+    transactions = getTransactionsWithinTimeFrame(transactions, startTimeFrame, endTimeFrame)
+    totalWithdrawls = 0
+    for transaction in transactions:
+        transactionValue = float(transaction['details']['value']['amount'])
+        if  transactionValue < 0:
+            totalWithdrawls += transactionValue
+    return totalWithdrawls
+
+def getNetSavingsWithinTimeFrame(transactions, startTimeFrame, endTimeFrame):
+    return (getDepositsWithinTimeFrame(transactions, startTimeFrame, endTimeFrame) -
+            getWithdrawlsWithinTimeFrame(transactions, startTimeFrame, endTimeFrame))
+
+def getFirstKnownTransaction(transactions):
+    if len(transactions) == 0:
+        return -1
+    if len(transactions) == 1:
+        return transactions[0]
+    firstKnownTransaction = datetime.datetime.strptime(transactions[0]['details']['posted'],  "%Y-%m-%dT%H:%M:%S%z")
+    for i in range(1, len(transactions)):
+        t1 = datetime.datetime.strptime(transactions[i]['details']['posted'],  "%Y-%m-%dT%H:%M:%S%z")
+        if (firstKnownTransaction > t1):
+            firstKnownTransaction = t1
+    return firstKnownTransaction
 
 # def averageMonthlyBalanceWithinTimeFrame(accounts, startTimeFrame, endTimeFrame):
 #     startTimeFrame = datetime.datetime.strptime(startTimeFrame,  "%Y-%m-%dT%H:%M:%S%z") 
@@ -90,8 +114,8 @@ def main():
     accounts = getAccounts(bank)
     transactions = getTransactions(bank, accounts)
 
-    print(obp.getTransactions(bank, accounts[0]['id']))
-
+    print(getFirstKnownTransaction(transactions))
+    #print(obp.getTransactions(bank, accounts[0]['id']))
     # for i in accounts:
     #     print(getAccountOpenDate(bank, i['id']))
     #print(obp.getBalances(bank))
