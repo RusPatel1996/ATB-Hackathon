@@ -115,13 +115,11 @@ def createUser(fname, lname, email, username, password):
 
 # Get all user's private accounts
 def getPrivateAccounts(bank):
-    # Prepare headers
     response = requests.get(u"{0}/obp/{1}/banks/{2}/accounts/private".format(BASE_URL, API_VERSION, bank), headers=mergeHeaders(DL_TOKEN, CONTENT_JSON))
     return response.json()['accounts']
 
 # Get a single account
 def getAccount(bank, account):
-    # Prepare headers
     response = requests.get(u"{0}/obp/{1}/my/banks/{2}/accounts/{3}/account".format(BASE_URL, API_VERSION, bank, account), headers=mergeHeaders(DL_TOKEN, CONTENT_JSON))
     return response.json()
 
@@ -129,6 +127,15 @@ def getAccount(bank, account):
 def getAccountsAtBankIdOnly(bank):
     response = requests.get(u"{0}/obp/{1}/banks/{2}/accounts/account_ids/private".format(BASE_URL, API_VERSION, bank), headers=mergeHeaders(DL_TOKEN, CONTENT_JSON))
     return response.json()['accounts']
+
+def getAccountByIdCore(bank, account_id):
+    response = requests.get(u"{0}/obp/{1}/my/banks/{2}/accounts/{3}/account".format(BASE_URL, API_VERSION, bank, account_id), headers=mergeHeaders(DL_TOKEN, CONTENT_JSON))
+    return response.json()
+
+# Get the Balances for the Accounts of the current User at one bank.
+def getBalances(bank):
+    response = requests.get(u"{0}/obp/{1}/banks/{2}/balances".format(BASE_URL, API_VERSION, bank), headers=mergeHeaders(DL_TOKEN, CONTENT_JSON))
+    return response.json()
 
 # Get Transaction by Id.
 def getTransaction(bank_id, account_id, transaction_id):
