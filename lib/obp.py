@@ -125,15 +125,20 @@ def getAccount(bank, account):
     response = requests.get(u"{0}/obp/{1}/my/banks/{2}/accounts/{3}/account".format(BASE_URL, API_VERSION, bank, account), headers=mergeHeaders(DL_TOKEN, CONTENT_JSON))
     return response.json()
 
-# Get owner's transactions
-def getTransactions(bank, account):
-    response = requests.get(u"{0}/obp/{1}/banks/{2}/accounts/{3}/owner/transactions".format(BASE_URL, API_VERSION, bank, account), headers=mergeHeaders(DL_TOKEN, CONTENT_JSON))
-    return response.json()['transactions']
+# Get all account ids in a bank
+def getAccountsAtBankIdOnly(bank):
+    response = requests.get(u"{0}/obp/{1}/banks/{2}/accounts/account_ids/private".format(BASE_URL, API_VERSION, bank), headers=mergeHeaders(DL_TOKEN, CONTENT_JSON))
+    return response.json()['accounts']
 
 # Get Transaction by Id.
 def getTransaction(bank_id, account_id, transaction_id):
     response = requests.get(u"{0}/obp/{1}/banks/{2}/accounts/{3}/owner/transactions/{4}/transaction".format(BASE_URL, API_VERSION, bank_id, account_id, transaction_id), headers=mergeHeaders(DL_TOKEN, CONTENT_JSON))
     return response.json()
+
+# Get owner's transactions
+def getTransactions(bank_id, account_id):
+    response = requests.get(u"{0}/obp/{1}/banks/{2}/accounts/{3}/owner/transactions".format(BASE_URL, API_VERSION, bank_id, account_id), headers=mergeHeaders(DL_TOKEN, CONTENT_JSON))
+    return response.json()['transactions']
 
 # Get challenge types
 def getChallengeTypes(bank, account):
@@ -152,9 +157,9 @@ def answerChallenge(bank, account, transation_req_id, challenge_query):
     )
     return response.json()
 
-def getTransactionRequest(bank, account, transation_req_id):
-    response = requests.get(u"{0}/obp/{1}/banks/{2}/accounts/{3}/owner/transactions".format(BASE_URL, API_VERSION, bank, account), headers=mergeHeaders(DL_TOKEN, CONTENT_JSON))
-    return response.json
+def getTransactionRequest(bank, account):
+    response = requests.get(u"{0}/obp/{1}/banks/{2}/accounts/{3}/owner/transaction-requests".format(BASE_URL, API_VERSION, bank, account), headers=mergeHeaders(DL_TOKEN, CONTENT_JSON))
+    return response.json()
 
 def initiateTransactionRequest(bank, account, challenge_type, cp_bank, cp_account):
     send_to = {"bank": cp_bank, "account": cp_account}
